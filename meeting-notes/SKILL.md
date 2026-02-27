@@ -1,9 +1,9 @@
 ---
 name: meeting-notes
 description: |
-  Google Meet 회의록(Gemini 생성 MD 파일)을 구조화된 요약으로 변환.
-  Meeting notes 폴더의 회의록을 읽어 요약/의사결정/액션아이템으로 정리하고,
-  사용자 확인 후 마크다운 파일로 저장한다.
+  Transform Google Meet transcripts (Gemini-generated MD files) into structured summaries.
+  Reads meeting notes, organizes them into summary/decisions/action items,
+  and saves as markdown after user confirmation.
 allowed-tools:
   - Read
   - Write
@@ -12,74 +12,74 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-# Meeting Notes 요약 스킬
+# Meeting Notes Summarizer
 
-Google Meet 회의록(Gemini가 생성한 MD 파일)을 구조화된 요약으로 변환한다.
+Transforms Google Meet transcripts (Gemini-generated MD files) into structured meeting summaries.
 
-## 워크플로우
+## Workflow
 
-### Step 1: 회의록 파일 탐색 & 선택
+### Step 1: Discover & Select Transcript Files
 
-1. 프로젝트의 `Meeting notes/` 폴더에서 `*회의록.md` 패턴으로 파일 탐색 (Glob 사용)
-2. 발견된 파일 목록을 **항상** AskUserQuestion으로 사용자에게 보여주고 어떤 파일을 처리할지 선택받기
-3. 파일이 1개여도 자동 선택하지 않고 반드시 확인
+1. Search the project's `Meeting notes/` folder for files matching `*회의록.md` pattern (using Glob)
+2. **Always** present the list of found files to the user via AskUserQuestion and let them choose which file(s) to process
+3. Never auto-select, even if only one file is found
 
-### Step 2: 회의록 읽기 & 메타데이터 추출
+### Step 2: Read Transcript & Extract Metadata
 
-1. 선택된 MD 파일을 Read로 읽기 (파일이 크면 분할 읽기)
-2. 메타데이터 추출:
-   - **회의 제목**: 파일명의 첫 부분 (예: `America Tech Daily`)
-   - **회의 날짜**: 파일명의 날짜 또는 MD 첫 줄 (예: `2026_02_10` → `2026-02-10`)
-   - **참석자**: `**이름:**` 패턴에서 고유 이름 추출. Grep으로 `\*\*\w+ \w+:\*\*` 패턴 검색
-   - **회의 시간**: 첫/마지막 타임스탬프(`### HH:MM:SS`)로 산출
+1. Read the selected MD file using Read (split into chunks if the file is large)
+2. Extract metadata:
+   - **Meeting title**: First part of the filename (e.g., `America Tech Daily`)
+   - **Meeting date**: Date from the filename or the first line of the MD (e.g., `2026_02_10` → `2026-02-10`)
+   - **Attendees**: Extract unique names from `**Name:**` patterns. Search with Grep using `\*\*\w+ \w+:\*\*` pattern
+   - **Meeting duration**: Calculate from first/last timestamps (`### HH:MM:SS`)
 
-### Step 3: 구조화된 요약 생성
+### Step 3: Generate Structured Summary
 
-회의록 전체를 읽고 아래 형식으로 요약을 생성한다.
+Read the entire transcript and generate a summary in the format below.
 
-**중요 규칙:**
-- 회의록에 명시적으로 언급된 내용만 정리. 추측이나 임의 내용 생성 금지
-- 불명확한 부분은 AskUserQuestion으로 사용자에게 질문
-- 참석자 이름은 반드시 회의록의 **전체 이름** 사용 (예: "YooChan Kim", 절대 "유찬" 아님)
-- 요약은 한국어로 작성
+**Important Rules:**
+- Only include information explicitly mentioned in the transcript. No speculation or fabricated content
+- Ask the user via AskUserQuestion if anything is unclear
+- Always use **full names** as they appear in the transcript (e.g., "YooChan Kim", never nicknames)
+- Write the summary in the same language as the transcript
 
-**출력 형식:**
+**Output Format:**
 
 ```markdown
-# {회의 제목} - {YYYY-MM-DD}
+# {Meeting Title} - {YYYY-MM-DD}
 
-## 참석자
-- {참석자 전체 이름 1}
-- {참석자 전체 이름 2}
+## Attendees
+- {Attendee Full Name 1}
+- {Attendee Full Name 2}
 - ...
 
-## 요약 (Summary)
-1. **{주제}**: {내용 요약}
-2. **{주제}**: {내용 요약}
+## Summary
+1. **{Topic}**: {Summary of discussion}
+2. **{Topic}**: {Summary of discussion}
 ...
 
-## 의사결정 (Decisions)
-1. {결정 사항}
-2. {결정 사항}
+## Decisions
+1. {Decision made}
+2. {Decision made}
 ...
 
-## 액션 아이템 (Action Items)
-| # | 담당자 | 내용 | 기한 |
-|---|--------|------|------|
-| 1 | {Full Name} | {할 일} | {기한 또는 미정} |
-| 2 | {Full Name} | {할 일} | {기한 또는 미정} |
+## Action Items
+| # | Owner | Task | Deadline |
+|---|-------|------|----------|
+| 1 | {Full Name} | {Task description} | {Deadline or TBD} |
+| 2 | {Full Name} | {Task description} | {Deadline or TBD} |
 ```
 
-### Step 4: 파일 저장
+### Step 4: User Review
 
-요약 생성 후 바로 저장:
-1. `Meeting notes/summary/` 폴더가 없으면 생성
-2. 파일명: `{YYYY-MM-DD} {회의 제목} - Summary by Claude.md`
-3. 예: `2026-02-10 America Tech Daily - Summary by Claude.md`
-4. Write로 저장 후 사용자에게 저장 경로 안내
+1. Display the generated summary in the chat
+2. Ask the user via AskUserQuestion: "Is this summary accurate? Let me know if anything needs to be revised."
+3. If revisions are requested, apply changes and re-confirm
 
-### Step 5: 사용자 확인
+### Step 5: Save File
 
-1. 생성된 요약을 채팅에 그대로 출력
-2. AskUserQuestion으로 확인: "이 요약이 정확한가요? 수정할 부분이 있으면 알려주세요."
-3. 수정 요청이 있으면 반영 후 파일도 다시 저장(덮어쓰기) 및 재확인
+After user approval:
+1. Create `Meeting notes/summary/` folder if it doesn't exist
+2. Filename: `{YYYY-MM-DD} {Meeting Title} - Summary by Claude.md`
+3. Example: `2026-02-10 America Tech Daily - Summary by Claude.md`
+4. Save using Write and inform the user of the saved file path
