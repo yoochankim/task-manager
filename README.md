@@ -6,7 +6,7 @@ A project management agent for Claude Code. Summarizes meetings, tracks action i
 
 | Component | Description |
 |-----------|-------------|
-| [Agents](./agents.md) | Project management agent definition |
+| [Agent](./agent.md) | Project management agent definition |
 | [Skills](./skills.md) | Reusable skill modules |
 | [MCPs](./MCPs.md) | External service integrations |
 
@@ -25,7 +25,7 @@ Then run `/md-meeting-notes` in Claude Code.
 ```
 task-manager/
 ├── README.md
-├── agents.md
+├── agent.md
 ├── skills.md
 ├── MCPs.md
 └── skills/
