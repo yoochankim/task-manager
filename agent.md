@@ -1,4 +1,4 @@
-# Agents
+# Agent
 
 ## task-manager
 
