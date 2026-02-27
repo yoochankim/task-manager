@@ -28,7 +28,7 @@ Transforms Google Meet transcripts (Gemini-generated MD files) into structured m
 
 1. Read the selected MD file using Read (split into chunks if the file is large)
 2. Extract metadata:
-   - **Meeting title**: First part of the filename (e.g., `America Tech Daily`)
+   - **Meeting title**: First part of the filename (e.g., `Weekly Product Sync`)
    - **Meeting date**: Date from the filename or the first line of the MD (e.g., `2026_02_10` → `2026-02-10`)
    - **Attendees**: Extract unique names from `**Name:**` patterns. Search with Grep using `\*\*\w+ \w+:\*\*` pattern
    - **Meeting duration**: Calculate from first/last timestamps (`### HH:MM:SS`)
@@ -40,7 +40,7 @@ Read the entire transcript and generate a summary in the format below.
 **Important Rules:**
 - Only include information explicitly mentioned in the transcript. No speculation or fabricated content
 - Ask the user via AskUserQuestion if anything is unclear
-- Always use **full names** as they appear in the transcript (e.g., "YooChan Kim", never nicknames)
+- Always use **full names** as they appear in the transcript (e.g., "Jane Smith", never first names or nicknames)
 - Write the summary in the same language as the transcript
 
 **Output Format:**
@@ -81,5 +81,5 @@ Read the entire transcript and generate a summary in the format below.
 After user approval:
 1. Create `Meeting notes/summary/` folder if it doesn't exist
 2. Filename: `{YYYY-MM-DD} {Meeting Title} - Summary by Claude.md`
-3. Example: `2026-02-10 America Tech Daily - Summary by Claude.md`
+3. Example: `2026-03-15 Weekly Product Sync - Summary by Claude.md`
 4. Save using Write and inform the user of the saved file path
