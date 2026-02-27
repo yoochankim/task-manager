@@ -1,6 +1,6 @@
 # Task Manager
 
-A project management agent for Claude Code. Summarizes meetings, tracks action items, and syncs with external tools.
+A project management agent that summarizes meetings, tracks action items, and syncs with external tools.
 
 ## Overview
 
@@ -10,15 +10,26 @@ A project management agent for Claude Code. Summarizes meetings, tracks action i
 | [Skills](./skills.md) | Reusable skill modules |
 | [MCPs](./MCPs.md) | External service integrations |
 
+## Compatibility
+
+Built and tested on [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Also compatible with other AI coding agents that support the skills format.
+
+### Recommended Models
+
+| Model | Best For |
+|-------|----------|
+| Claude Sonnet 4.6 | Daily use — fast and cost-effective |
+| Claude Opus 4.6 | Complex tasks requiring deeper reasoning |
+
 ## Quick Start
 
 Install the meeting notes skill:
 
 ```bash
-npx skills install https://github.com/yoochankim/task-manager/tree/main/skills/md-meeting-notes
+npx skills add https://github.com/yoochankim/task-manager --skill md-meeting-notes
 ```
 
-Then run `/md-meeting-notes` in Claude Code.
+Then run `/md-meeting-notes` in your agent.
 
 ## Folder Structure
 
